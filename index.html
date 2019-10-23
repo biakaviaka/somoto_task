@@ -1,0 +1,70 @@
+<div id="target" style="width:100px;height:100px;"></div>
+<script>
+  let color1 = "#ffffff"
+  let color2 = "#000000"
+  let node = document.getElementsByTagName('div')[0]
+
+  node.setColor = function(str) {
+    this.style.backgroundColor = str
+  }
+
+  function hexToRGB(hex) {
+    let rgb = []
+    for(let i = 0; i < 6; i = i+2) {
+      rgb.push(parseInt(hex.substr(i, 2), 16))
+    }
+
+    return rgb
+  }
+
+  function RGBToHex(rgb) {
+    let str = rgb.toString(16)
+    return (str.length < 2 ? "0" : "") + str
+  }
+
+  function animate(n, c1, c2) {
+    let colors = [c1]
+    let current_color = c1
+
+    let rgb_c1 = hexToRGB(c1.replace("#", ""))
+    let rgb_c2 = hexToRGB(c2.replace("#", ""))
+
+    while(current_color != c2) {
+      let temp_rgb = Array(3).fill(null)
+
+      for(let i = 0; i < rgb_c1.length; ++i) {
+        let step = 1
+        let done = [false, false, false]
+
+        if(! done[i]) {
+          if(rgb_c1[i] > rgb_c2[i]) {
+            rgb_c1[i] = Math.max(rgb_c1[i] - step, rgb_c2[i])
+            if(rgb_c1[i] <= rgb_c2[i]) {
+              done[i] = true
+            }
+          } else {
+            rgb_c1[i] = Math.min(rgb_c1[i] + step, rgb_c2[i])
+            if(rgb_c1[i] >= rgb_c2[i]) {
+              done[i] = true
+            }
+          }
+          temp_rgb[i] = rgb_c1[i]
+        }
+      }
+
+      current_color = "#" + RGBToHex(temp_rgb[0]) +  RGBToHex(temp_rgb[1]) + RGBToHex(temp_rgb[2])
+
+      colors.push(current_color)
+    }
+
+    function setColorClosure(n, color) {
+      n.setColor(color)
+    }
+
+    colors.forEach(function(color, i) {
+      setTimeout(setColorClosure, 10 * i, node, color)
+    })
+  }
+
+  animate(node, color1, color2)
+</script>
